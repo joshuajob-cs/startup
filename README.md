@@ -4,7 +4,21 @@
 
 Psychic Questions is a web application that provides a fun activity for a group of people to engage and connect with one another. Each person is asked four questions. Then they must guess everyone else's responses. The guesser goes through the four questions one at a time, and recieves feedback on what the correct answer was each time. For the first question they rely on random guesswork, but on the fourth question they can make an educated "psychic" guess based on the other three responses. Players win points by guessing correctly.
 
-## 🚀 Specification Deliverable
+![Guessing how another player answered](docs/gameplay.png)
+
+## How it's built
+
+**Stack** — React 19 + Vite, Node/Express, WebSocket (`ws`), MongoDB, Jest + Supertest.
+
+**Phase sync** — the server owns the game phase (lobby → answering → guessing → winner) and broadcasts every transition over WebSocket, so every player's screen advances together instead of polling. [`service/websocket.js`](service/websocket.js) broadcasts; [`usePhaseChange`](client/src/hooks/usePhaseChange.js) is what each screen subscribes with.
+
+**Hosting** — ran on AWS EC2 behind a custom domain at about $11/month. I priced a downgrade to a smaller instance at ~$4.75/month ([AWS_COSTS.md](AWS_COSTS.md)), but re-platforming to Fly.io beat it: machines idle down to zero, leaving the $3/year domain as the only standing cost.
+
+## Course deliverables
+
+The rest of this README is the per-deliverable log from CS 260, kept as written.
+
+### 🚀 Specification Deliverable
 
 For this deliverable I did the following:
 
@@ -14,19 +28,19 @@ For this deliverable I did the following:
 - [x] Description of how you will use each technology
 - [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
-### Elevator pitch
+#### Elevator pitch
 
 Psychic questions is a sensational get-to-know-you game that you can play with your friends or classmates on any device. Is your friend a nerd? A jock? An actor? Some weird mesh of all 3? Everything you learn about them gets you deeper into their head, strengthening your psychic powers! Now you know everything about them! Or _do_ you...
 
-### Design
+#### Design
 
 One user must create an account and sign in to start the game. All of the other players can join with the join code. Each player can see a list of all of the players who have joined. Players must type in their name to join the game.
 
-<img src=Drawings/Login.jpg alt="Login screen has option to login with username and password to create a new game, login with code to join a game, or sign up if you do not have an account yet." height="300"/> <img src=Drawings/Join.jpg alt="When someone logs in either to start a game or join a game, a game code is displayed along with the number of players that have joined and a list of their names." height="300"/> <img src=Drawings/Join2.jpg alt="Each player must type in their name as they join." height="300"/>
+<img src=docs/Login.jpg alt="Login screen has option to login with username and password to create a new game, login with code to join a game, or sign up if you do not have an account yet." height="300"/> <img src=docs/Join.jpg alt="When someone logs in either to start a game or join a game, a game code is displayed along with the number of players that have joined and a list of their names." height="300"/> <img src=docs/Join2.jpg alt="Each player must type in their name as they join." height="300"/>
 
 Each player must answer four questions about themselves to start off the game.
 
-<img src=Drawings/AnswerYourself.jpg alt="At the beggining of the game four questions are displayed one at a time for each player to answer." height="500"/>
+<img src=docs/AnswerYourself.jpg alt="At the beggining of the game four questions are displayed one at a time for each player to answer." height="500"/>
 
 Each player will recieve the same questions as another player and try to guess what that player said. The questions are given in a random order, so the guesser can not leave the easy ones for last. Each time the guesser guesses they recieve immediate feedback on what the correct answer is. The idea is that the first response they must guess will be a shot in the dark, but for the remaining ones they will be able to make an educated guess based on the first three responses. As the guesser recieves each question the screen will become scrollable, so that it can all fit on the screen at once.
 
@@ -35,11 +49,11 @@ Question 2: 10 points
 Question 3: 25 points  
 Question 4: 50 points
 
-<img src=Drawings/GuessOthersAnswers.jpg alt="On this screen a player is trying to guess how Jake responded to a question. The player has four possible answer choices. The player's points are displayed in the upper right corner. The screen is scrollable after the player has answered their first question, so that they can look at the questions they have already answered.]" height="400"/> <img src=Drawings/GuessOthersAnswers2.jpg alt="On this screen, a player has guessed how Jake responded to a question, and the correct answer is displayed." height="400"/>
+<img src=docs/GuessOthersAnswers.jpg alt="On this screen a player is trying to guess how Jake responded to a question. The player has four possible answer choices. The player's points are displayed in the upper right corner. The screen is scrollable after the player has answered their first question, so that they can look at the questions they have already answered.]" height="400"/> <img src=docs/GuessOthersAnswers2.jpg alt="On this screen, a player has guessed how Jake responded to a question, and the correct answer is displayed." height="400"/>
 
 Whomever gets the most points wins!
 
-<img src="Drawings/Winner.jpg" alt="A screen is shown with the name of the winner, how many times they were able to answer the fourth question correctly, and how many total points they had." height="500"/>
+<img src="docs/Winner.jpg" alt="A screen is shown with the name of the winner, how many times they were able to answer the fourth question correctly, and how many total points they had." height="500"/>
 
 In the sequence diagram each player interacts with the server to send in and recieve questions/responses.
 
@@ -60,7 +74,7 @@ sequenceDiagram
     Service->>Tasha: Questions to guess the response to
 ```
 
-### Key features
+#### Key features
 
 - Login authentication screen with securely stored password
 - Join code allows each player to join
@@ -71,7 +85,7 @@ sequenceDiagram
 - Randomizes questions and possible responses
 - Point system
 
-### Technologies
+#### Technologies
 
 I am going to use the required technologies in the following ways.
 
@@ -82,13 +96,13 @@ I am going to use the required technologies in the following ways.
 - **DB/Login** - Securely stores credentials in database. Stores questions and answers for each individual. Stores point values of each player connecte dto their name.
 - **WebSocket** - Broadcast message when users first enter the game, when users finish answering the questions, and when users finish guessing, so that everybody stays on the same page and goes from one phase to the next at the same time.
 
-## 🚀 AWS deliverable
+### 🚀 AWS deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **Server deployed and accessible with custom domain name** - [My server link](https://joshuajob-cs.click).
+- [x] **Server deployed and accessible with custom domain name** - [My server link](https://joshuajob-cs.click) (deployment since retired — see the hosting note above).
 
-## 🚀 HTML deliverable
+### 🚀 HTML deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
@@ -102,7 +116,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **DB data placeholder** - Player scores and responses stored in database.
 - [x] **WebSocket placeholder** - Websocket used to know how many other players are joined. Sends a message as soon as they join.
 
-## 🚀 CSS deliverable
+### 🚀 CSS deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
@@ -113,7 +127,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Use of a imported font** - Imported two fonts.
 - [x] **Use of different types of selectors including element, class, ID, and pseudo selectors** - Used all of these throughut the application. Used the hover pseudo selector.
 
-## 🚀 React part 1: Routing deliverable
+### 🚀 React part 1: Routing deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
@@ -121,14 +135,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Components** - Has all of the CSS components from earlier and the HTML jas been deleted and replaced with JSX
 - [x] **Router** - See routing in app.jsx
 
-## 🚀 React part 2: Reactivity deliverable
+### 🚀 React part 2: Reactivity deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **All functionality implemented or mocked out** - Storage is mocked out. Checks if you have the correct join code. The username and name you type in are stored for the rest of the app. Your score is stored. Websocket is mocked out with players being added and the jsx handling it correctly. Questions page correctly switches between questions, and answers page correctly adds new answers. Checks if your answer is correct and gives you points accordingly. Compares your points to anotehr player to see if you won.
 - [x] **Hooks** - I added a lot of useState hooks for all of the UI componemts that change. I added effectState hooks for things that need to be done asynchronously. The effectState hooks are used with storage and Websocket mock ups.
 
-## 🚀 Service deliverable
+### 🚀 Service deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
@@ -139,14 +153,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Frontend calls service endpoints** - API for authentication, game data, and player responses called by frontend.
 - [x] **Supports registration, login, logout, and restricted endpoint** - All of these are supported and requireSession middleware creates restricted endpoints.
 
-## 🚀 DB deliverable
+### 🚀 DB deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **Stores data in MongoDB** - Stores game data in MongoDB, uses debouncing to keep database up to date with server
 - [x] **Stores credentials in MongoDB** - Username and password are stored persistently after server shut down
 
-## 🚀 WebSocket deliverable
+### 🚀 WebSocket deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
